@@ -16,7 +16,7 @@ Replace **VERSION** with the latest version shown above.
 
 For Maven:
 
-```
+```xml
 <repository>
   <id>jitpack.io</id>
   <url>https://jitpack.io</url>
@@ -31,12 +31,11 @@ For Maven:
 
 For Gradle:
 
-```
+```gradle
 allprojects {
   repositories {
-    ...
-		maven { url 'https://jitpack.io' }
-	}
+    maven { url 'https://jitpack.io' }
+	}	
 }
   
 dependencies {
