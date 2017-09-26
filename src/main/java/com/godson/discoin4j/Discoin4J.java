@@ -337,7 +337,7 @@ public class Discoin4J {
 
         private Status() {}
 
-        public String getStatus() {
+        public String getStatusState() {
             return status;
         }
 
