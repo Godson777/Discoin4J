@@ -43,19 +43,17 @@ public class Discoin4J {
      * @throws DiscoinErrorException If return code is 400.
      * @throws UnauthorizedException If return code is 401.
      * @throws RejectedException If return code is 403.
-     * @throws TransactionNotFoundException If return code is 404.
      * @throws UnknownErrorException If return code does not match any of the codes this wrapper handles.
      */
-    public Confirmation makeTransaction(String userID, int amount, String to) throws IOException, DiscoinErrorException, UnauthorizedException, RejectedException, TransactionNotFoundException, UnknownErrorException {
+    public Confirmation makeTransaction(String userID, int amount, String to) throws IOException, DiscoinErrorException, UnauthorizedException, RejectedException, UnknownErrorException {
         RequestBody body = RequestBody.create(JSON, new Transaction(userID, amount, to).toString());
         Request request = new Request.Builder().url(url + "transaction").headers(headers).post(body).build();
         Response response = client.newCall(request).execute();
         switch (response.code()) {
             case 200: return gson.fromJson(response.body().string(), Confirmation.class);
-            case 400: throw new DiscoinErrorException(gson.fromJson(response.body().string(), Status.class).reason);
+            case 400: throw new DiscoinErrorException(gson.fromJson(response.body().string(), Status.class));
             case 401: throw new UnauthorizedException();
-            case 403: throw new RejectedException(gson.fromJson(response.body().string(), Status.class).reason);
-            case 404: throw new TransactionNotFoundException();
+            case 403: throw new RejectedException(gson.fromJson(response.body().string(), Status.class));
             default: throw new UnknownErrorException();
         }
     }
@@ -78,9 +76,9 @@ public class Discoin4J {
         Response response = client.newCall(request).execute();
         switch (response.code()) {
             case 200: return response.body().string();
-            case 400: throw new DiscoinErrorException(gson.fromJson(response.body().string(), Status.class).reason);
+            case 400: throw new DiscoinErrorException(gson.fromJson(response.body().string(), Status.class));
             case 401: throw new UnauthorizedException();
-            case 403: throw new RejectedException(gson.fromJson(response.body().string(), Status.class).reason);
+            case 403: throw new RejectedException(gson.fromJson(response.body().string(), Status.class));
             case 404: throw new TransactionNotFoundException();
             default: throw new UnknownErrorException();
         }
@@ -103,9 +101,9 @@ public class Discoin4J {
         Response response = client.newCall(request).execute();
         switch (response.code()) {
             case 200: return gson.fromJson(response.body().string(), Receipt.class);
-            case 400: throw new DiscoinErrorException(gson.fromJson(response.body().string(), Status.class).reason);
+            case 400: throw new DiscoinErrorException(gson.fromJson(response.body().string(), Status.class));
             case 401: throw new UnauthorizedException();
-            case 403: throw new RejectedException(gson.fromJson(response.body().string(), Status.class).reason);
+            case 403: throw new RejectedException(gson.fromJson(response.body().string(), Status.class));
             case 404: throw new TransactionNotFoundException();
             default: throw new UnknownErrorException();
         }
@@ -119,18 +117,16 @@ public class Discoin4J {
      * @throws DiscoinErrorException If return code is 400.
      * @throws UnauthorizedException If return code is 401.
      * @throws RejectedException If return code is 403.
-     * @throws TransactionNotFoundException If return code is 404.
      * @throws UnknownErrorException If return code does not match any of the codes this wrapper handles.
      */
-    public List<PendingTransaction> getPendingTransactions() throws IOException, DiscoinErrorException, UnauthorizedException, RejectedException, TransactionNotFoundException, UnknownErrorException {
+    public List<PendingTransaction> getPendingTransactions() throws IOException, DiscoinErrorException, UnauthorizedException, RejectedException, UnknownErrorException {
         Request request = new Request.Builder().url(url + "transactions").headers(headers).get().build();
         Response response = client.newCall(request).execute();
         switch (response.code()) {
             case 200: return gson.fromJson(response.body().string(), pendTransType);
-            case 400: throw new DiscoinErrorException(gson.fromJson(response.body().string(), Status.class).reason);
+            case 400: throw new DiscoinErrorException(gson.fromJson(response.body().string(), Status.class));
             case 401: throw new UnauthorizedException();
-            case 403: throw new RejectedException(gson.fromJson(response.body().string(), Status.class).reason);
-            case 404: throw new TransactionNotFoundException();
+            case 403: throw new RejectedException(gson.fromJson(response.body().string(), Status.class));
             default: throw new UnknownErrorException();
         }
     }
@@ -333,8 +329,28 @@ public class Discoin4J {
         }
     }
 
-    private class Status {
+    public class Status {
         private String status;
         private String reason;
+        private String currency;
+        private double limit;
+
+        private Status() {}
+
+        public String getStatus() {
+            return status;
+        }
+
+        public String getReason() {
+            return reason;
+        }
+
+        public String getCurrency() {
+            return currency;
+        }
+
+        public double getLimit() {
+            return limit;
+        }
     }
 }
