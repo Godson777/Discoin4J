@@ -83,7 +83,7 @@ public class Discoin4J {
      * @throws GenericErrorException If return code does not match any of the codes this wrapper handles.
      */
     public List<Transaction> getPendingTransactions(String currency) throws IOException, UnauthorizedException, GenericErrorException {
-        Request request = new Request.Builder().url(url + "transactions?filter=to.id||eq||" + currency + "&filter=handled||eq||true").headers(headers).get().build();
+        Request request = new Request.Builder().url(url + "transactions?filter=to.id||eq||" + currency + "&filter=handled||eq||false").headers(headers).get().build();
         Response response = client.newCall(request).execute();
         switch (response.code()) {
             case 200: return gson.fromJson(response.body().string(), pendTransType);
