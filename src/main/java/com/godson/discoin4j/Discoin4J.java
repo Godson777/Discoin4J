@@ -218,7 +218,7 @@ public class Discoin4J {
     public class Currency {
         private String id;
         private String name;
-        private double amount;
+        private double value;
         private double reserve;
 
         public String getId() {
@@ -229,8 +229,8 @@ public class Discoin4J {
             return name;
         }
 
-        public double getAmount() {
-            return amount;
+        public double getValue() {
+            return value;
         }
 
         public double getReserve() {
