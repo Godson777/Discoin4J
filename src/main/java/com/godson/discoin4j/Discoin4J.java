@@ -18,6 +18,7 @@ public class Discoin4J {
     private final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private final Gson gson = new Gson();
     private Type pendTransType = new TypeToken<List<Transaction>>(){}.getType();
+    private Type currencyType = new TypeToken<List<Currency>>(){}.getType();
 
     /**
      * The main class used to interact with the Discoin API.
@@ -92,6 +93,23 @@ public class Discoin4J {
     }
 
     /**
+     * Loads a list of currencies from the Discoin API.
+     * @return The list of currencies.
+     * @throws IOException If for some reason OkHttp throws an error.
+     * @throws UnauthorizedException If return code is 401.
+     * @throws GenericErrorException If return code does not match any of the codes this wrapper handles.
+     */
+    public List<Currency> getCurrencies() throws IOException, UnauthorizedException, GenericErrorException {
+        Request request = new Request.Builder().url(url + "currencies").headers(headers).get().build();
+        Response response = client.newCall(request).execute();
+        switch (response.code()) {
+            case 200: return gson.fromJson(response.body().string(), currencyType);
+            case 401: throw new UnauthorizedException();
+            default: throw new GenericErrorException();
+        }
+    }
+
+    /**
      * Represents a transaction to be requested.
      */
     private class TransactionRequest {
@@ -137,13 +155,6 @@ public class Discoin4J {
         private double payout;
         private Currency from;
         private Currency to;
-
-        private class Currency {
-            String id;
-            String name;
-            double amount;
-            double reserve;
-        }
 
         public String getId() {
             return id;
@@ -198,6 +209,32 @@ public class Discoin4J {
         @Override
         public String toString() {
             return gson.toJson(this);
+        }
+    }
+
+    /**
+     * Represents a currency from another bot. Currencies are listed in the Discoin API.
+     */
+    public class Currency {
+        private String id;
+        private String name;
+        private double amount;
+        private double reserve;
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getAmount() {
+            return amount;
+        }
+
+        public double getReserve() {
+            return reserve;
         }
     }
 }
