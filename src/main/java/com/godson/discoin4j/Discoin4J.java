@@ -1,6 +1,9 @@
 package com.godson.discoin4j;
 
-import com.godson.discoin4j.exceptions.*;
+
+import com.godson.discoin4j.exceptions.GenericErrorException;
+import com.godson.discoin4j.exceptions.TransactionNotFoundException;
+import com.godson.discoin4j.exceptions.UnauthorizedException;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -109,6 +112,18 @@ public class Discoin4J {
         }
     }
 
+    public void handleTransaction(Transaction transaction) throws IOException, GenericErrorException, UnauthorizedException {
+        transaction.setHandled();
+        RequestBody body = RequestBody.create(JSON, gson.toJson(transaction, Transaction.class));
+        Request request = new Request.Builder().url(url + "transactions/" + transaction.getId()).headers(headers).patch(body).build();
+        Response response = client.newCall(request).execute();
+        switch (response.code()) {
+            case 200: return; //Assume all went well. We won't need the data being given to us.
+            case 401: throw new UnauthorizedException();
+            default: throw new GenericErrorException();
+        }
+    }
+
     /**
      * Represents a transaction to be requested.
      */
@@ -156,6 +171,8 @@ public class Discoin4J {
         private Currency from;
         private Currency to;
 
+        private Transaction() {}
+
         public String getId() {
             return id;
         }
@@ -188,27 +205,10 @@ public class Discoin4J {
             return to;
         }
 
-        public void setHandled() throws GenericErrorException, IOException, UnauthorizedException {
+        private void setHandled() {
             //If somehow we're trying to set an already handled transaction as handled, do nothing.
             if (handled) return;
             handled = true;
-            patch();
-        }
-
-        private void patch() throws UnauthorizedException, GenericErrorException, IOException {
-            RequestBody body = RequestBody.create(JSON, this.toString());
-            Request request = new Request.Builder().url(url + "transactions/" + id).headers(headers).patch(body).build();
-            Response response = client.newCall(request).execute();
-            switch (response.code()) {
-                case 200: return; //Assume all went well. We won't need the data being given to us.
-                case 401: throw new UnauthorizedException();
-                default: throw new GenericErrorException();
-            }
-        }
-
-        @Override
-        public String toString() {
-            return gson.toJson(this, this.getClass());
         }
     }
 
