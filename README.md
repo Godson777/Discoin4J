@@ -2,7 +2,7 @@
 
 ## What is this?
 
-This is an API wrapper developed for use with the Discoin API. You can check out Discoin [here](https://github.com/MacDue/DiscoinRewrite), or you can join us over in the Discoin Discord server [here](https://discord.gg/FcPGn4z)
+This is an API wrapper developed for use with the Discoin API. You can check out Discoin [here](https://github.com/Discoin/api-v3), or you can join us over in the Discoin Discord server [here](https://discord.gg/FcPGn4z)
 
 ## What the heck is a Discoin?
 
