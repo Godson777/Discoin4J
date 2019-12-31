@@ -82,7 +82,7 @@ public class Discoin4J {
      * @throws GenericErrorException If return code does not match any of the codes this wrapper handles.
      */
     public List<Transaction> getPendingTransactions(String currency) throws IOException, UnauthorizedException, GenericErrorException {
-        Request request = new Request.Builder().url(url + "transactions/?filter=to.id||eq||" + currency + "&filter=handled||eq||true").headers(headers).get().build();
+        Request request = new Request.Builder().url(url + "transactions?filter=to.id||eq||" + currency + "&filter=handled||eq||true").headers(headers).get().build();
         Response response = client.newCall(request).execute();
         switch (response.code()) {
             case 200: return gson.fromJson(response.body().string(), pendTransType);
@@ -175,6 +175,24 @@ public class Discoin4J {
 
         public Currency getTo() {
             return to;
+        }
+
+        public void setHandled() throws GenericErrorException, IOException, UnauthorizedException {
+            //If somehow we're trying to set an already handled transaction as handled, do nothing.
+            if (handled) return;
+            handled = true;
+            patch();
+        }
+
+        private void patch() throws UnauthorizedException, GenericErrorException, IOException {
+            RequestBody body = RequestBody.create(JSON, this.toString());
+            Request request = new Request.Builder().url(url + "transactions/" + id).headers(headers).patch(body).build();
+            Response response = client.newCall(request).execute();
+            switch (response.code()) {
+                case 200: return; //Assume all went well. We won't need the data being given to us.
+                case 401: throw new UnauthorizedException();
+                default: throw new GenericErrorException();
+            }
         }
 
         @Override
