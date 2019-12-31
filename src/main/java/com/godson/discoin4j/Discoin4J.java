@@ -31,7 +31,7 @@ public class Discoin4J {
      */
     public Discoin4J(String token) {
         this.token = token;
-        headers = new Headers.Builder().add("Authorization", token).build();
+        headers = new Headers.Builder().add("Authorization", "Bearer " + token).build();
     }
 
     /**
