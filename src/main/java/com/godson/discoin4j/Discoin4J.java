@@ -208,7 +208,7 @@ public class Discoin4J {
 
         @Override
         public String toString() {
-            return gson.toJson(this);
+            return gson.toJson(this, this.getClass());
         }
     }
 
