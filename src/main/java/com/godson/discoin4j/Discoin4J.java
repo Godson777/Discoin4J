@@ -17,7 +17,7 @@ public class Discoin4J {
     private Headers headers;
     private final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private final Gson gson = new Gson();
-    private Type pendTransType = new TypeToken<List<PendingTransaction>>(){}.getType();
+    private Type pendTransType = new TypeToken<List<Transaction>>(){}.getType();
 
     /**
      * The main class used to interact with the Discoin API.
@@ -36,37 +36,37 @@ public class Discoin4J {
      * @param userID The ID of the user making the transaction.
      * @param amount The amount of the "from" currency that's being converted.
      * @param to The currency code belonging to the bot the currency is being converted to.
-     * @return The {@link Confirmation confirmation object} that confirms the transaction.
+     * @return The {@link Transaction confirmation object} that confirms the transaction.
      * @throws IOException If for some reason OkHttp throws an error.
      * @throws UnauthorizedException If return code is 401.
      * @throws GenericErrorException If return code does not match any of the codes this wrapper handles.
      */
-    public Confirmation makeTransaction(String userID, int amount, String to) throws IOException, UnauthorizedException, GenericErrorException {
-        RequestBody body = RequestBody.create(JSON, new Transaction(userID, amount, to).toString());
+    public Transaction makeTransaction(String userID, int amount, String to) throws IOException, UnauthorizedException, GenericErrorException {
+        RequestBody body = RequestBody.create(JSON, new TransactionRequest(userID, amount, to).toString());
         Request request = new Request.Builder().url(url + "transactions").headers(headers).post(body).build();
         Response response = client.newCall(request).execute();
         switch (response.code()) {
-            case 200: return gson.fromJson(response.body().string(), Confirmation.class);
+            case 200: return gson.fromJson(response.body().string(), Transaction.class);
             case 401: throw new UnauthorizedException();
             default: throw new GenericErrorException();
         }
     }
 
     /**
-     * Loads a receipt's information based on its code given to the user after the transaction.
+     * Loads a transaction's information based on its code given to the user after it was completed.
      *
-     * @param receipt The receipt code.
-     * @return The completed {@link Receipt receipt} object.
+     * @param id The id code.
+     * @return The completed {@link Transaction id} object.
      * @throws IOException If for some reason OkHttp throws an error.
      * @throws UnauthorizedException If return code is 401.
      * @throws TransactionNotFoundException If return code is 404.
      * @throws GenericErrorException If return code does not match any of the codes this wrapper handles.
      */
-    public Receipt loadReceipt(String receipt) throws IOException, UnauthorizedException, TransactionNotFoundException, GenericErrorException {
-        Request request = new Request.Builder().url(url + "transaction/" + receipt).headers(headers).get().build();
+    public Transaction getTransaction(String id) throws IOException, UnauthorizedException, TransactionNotFoundException, GenericErrorException {
+        Request request = new Request.Builder().url(url + "transaction/" + id).headers(headers).get().build();
         Response response = client.newCall(request).execute();
         switch (response.code()) {
-            case 200: return gson.fromJson(response.body().string(), Receipt.class);
+            case 200: return gson.fromJson(response.body().string(), Transaction.class);
             case 401: throw new UnauthorizedException();
             case 404: throw new TransactionNotFoundException();
             default: throw new GenericErrorException();
@@ -76,13 +76,13 @@ public class Discoin4J {
     /**
      * Loads a list of pending transactions for the user to interact with.
      *
-     * @return The {@link List list of} {@link PendingTransaction pending transactions}.
+     * @return The {@link List list of} {@link Transaction pending transactions}.
      * @throws IOException If for some reason OkHttp throws an error.
      * @throws UnauthorizedException If return code is 401.
      * @throws GenericErrorException If return code does not match any of the codes this wrapper handles.
      */
-    public List<PendingTransaction> getPendingTransactions() throws IOException, UnauthorizedException, GenericErrorException {
-        Request request = new Request.Builder().url(url + "transactions").headers(headers).get().build();
+    public List<Transaction> getPendingTransactions(String currency) throws IOException, UnauthorizedException, GenericErrorException {
+        Request request = new Request.Builder().url(url + "transactions/?filter=to.id||eq||" + currency + "&filter=handled||eq||true").headers(headers).get().build();
         Response response = client.newCall(request).execute();
         switch (response.code()) {
             case 200: return gson.fromJson(response.body().string(), pendTransType);
@@ -92,23 +92,23 @@ public class Discoin4J {
     }
 
     /**
-     * Represents a transaction.
+     * Represents a transaction to be requested.
      */
-    private class Transaction {
+    private class TransactionRequest {
         @SerializedName("user")
         private String id;
         private int amount;
-        @SerializedName("exchangeTo")
+        @SerializedName("toId")
         private String to;
 
         /**
-         * Creates an object representing a transaction, which will be sent to the Discoin API.
+         * Creates an object representing a requested transaction, which will be sent to the Discoin API.
          *
          * @param id The ID of the user making the transaction.
          * @param amount The amount of the "from" currency that's being converted.
          * @param to The currency code belonging to the bot the currency is being converted to.
          */
-        public Transaction(String id, int amount, String to) {
+        public TransactionRequest(String id, int amount, String to) {
             this.id = id;
             this.amount = amount;
             this.to = to;
@@ -126,192 +126,60 @@ public class Discoin4J {
     }
 
     /**
-     * Represents a successful refund.
-     * Cannot be created, can only be returned from the wrapper.
-     * The main purpose of this is to allow the user to make use of whatever data is outputted, for whatever reason they may have.
+     * Represents a transaction retrieved from the Discoin API.
      */
-    @Deprecated
-    public class Refund {
-        private String status;
-        private int refundAmount;
+    private class Transaction {
+        String id;
+        double amount;
+        String user;
+        boolean handled;
+        String timestamp;
+        double payout;
+        Currency from;
+        Currency to;
 
-        private Refund() {}
-
-        public String getStatus() {
-            return status;
+        private class Currency {
+            String id;
+            String name;
+            double amount;
+            double reserve;
         }
 
-        public int getRefundAmount() {
-            return refundAmount;
-        }
-    }
-
-    /**
-     * Represents a successful transaction.
-     * Cannot be created, can only be returned from the wrapper.
-     * The main purpose of this is to allow the user to make use of whatever data is outputted, for whatever reason they may have.
-     */
-    public class Confirmation {
-        private String status;
-        private String receipt;
-        private int limitNow;
-        private int resultAmount;
-
-        private Confirmation() {}
-
-        public String getStatus() {
-            return status;
-        }
-
-        public String getReceiptCode() {
-            return receipt;
-        }
-
-        public int getLimitNow() {
-            return limitNow;
-        }
-
-        public int getResultAmount() {
-            return resultAmount;
-        }
-    }
-
-    /**
-     * Represents a single pending transaction.
-     * Cannot be created, can only be returned from the wrapper.
-     * Separating a pending transaction down to a single object allows the user to handle each pending transaction individually.
-     * However, the user will only ever interact with this object when it's returned in a {@link List List object}.
-     * The main purpose of this is to allow the user to make use of whatever data is outputted, for whatever reason they may have.
-     */
-    public class PendingTransaction {
-        @SerializedName("user")
-        private String userID;
-        private long timestamp;
-        private String source;
-        private double amount;
-        private String receipt;
-        private String type;
-
-        private PendingTransaction() {}
-
-        public String getUserID() {
-            return userID;
-        }
-
-        public long getTimestamp() {
-            return timestamp;
-        }
-
-        public String getSource() {
-            return source;
+        public String getId() {
+            return id;
         }
 
         public double getAmount() {
             return amount;
         }
 
-        public String getReceipt() {
-            return receipt;
+        public String getUser() {
+            return user;
         }
 
-        public String getType() {
-            return type;
-        }
-    }
-
-    /**
-     * Represents a receipt object.
-     * Cannot be created, can only be returned from the wrapper.
-     * The main purpose of this is to allow the user to make use of whatever data is outputted, for whatever reason they may have.
-     */
-    public class Receipt {
-        @SerializedName("user")
-        private String id;
-        private long timestamp;
-        private String source;
-        private String target;
-        private String receipt;
-        private int amountSource;
-        private int amountDiscoin;
-        private int amountTarget;
-        private boolean processed;
-        private long processTime;
-        private boolean reversed;
-        private String type;
-
-        private Receipt() {}
-
-        public String getId() {
-            return id;
+        public boolean isHandled() {
+            return handled;
         }
 
-        public long getTimestamp() {
+        public String getTimestamp() {
             return timestamp;
         }
 
-        public String getSource() {
-            return source;
+        public double getPayout() {
+            return payout;
         }
 
-        public String getTarget() {
-            return target;
+        public Currency getFrom() {
+            return from;
         }
 
-        public String getReceiptCode() {
-            return receipt;
+        public Currency getTo() {
+            return to;
         }
 
-        public int getAmountSource() {
-            return amountSource;
-        }
-
-        public int getAmountDiscoin() {
-            return amountDiscoin;
-        }
-
-        public int getAmountTarget() {
-            return amountTarget;
-        }
-
-        public boolean isProcessed() {
-            return processed;
-        }
-
-        public long getProcessTime() {
-            return processTime;
-        }
-
-        public boolean isReversed() {
-            return reversed;
-        }
-
-        public String getType() {
-            return type;
-        }
-    }
-
-    public class Status {
-        private String status;
-        private String reason;
-        private String currency;
-        private double limit;
-
-        private Status() {}
-
-        public String getStatusState() {
-            return status;
-        }
-
-        public String getReason() {
-            return reason;
-        }
-
-        public String getCurrency() {
-            return currency;
-        }
-
-        public double getLimit() {
-            return limit;
+        @Override
+        public String toString() {
+            return gson.toJson(this);
         }
     }
 }

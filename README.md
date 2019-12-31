@@ -45,8 +45,4 @@ dependencies {
 
 ## Links
 
-[Discoin](https://github.com/MacDue/DiscoinRewrite)
-
-[Node.js Wrapper](https://github.com/Discoin/nodejs-wrapper)
-
-[Python Wrapper](https://gitlab.josephbanks.me/JoeBanks13/discoin-python)
+[Discoin](https://github.com/Discoin/api-v3)
