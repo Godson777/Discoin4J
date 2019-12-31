@@ -128,15 +128,15 @@ public class Discoin4J {
     /**
      * Represents a transaction retrieved from the Discoin API.
      */
-    private class Transaction {
-        String id;
-        double amount;
-        String user;
-        boolean handled;
-        String timestamp;
-        double payout;
-        Currency from;
-        Currency to;
+    public class Transaction {
+        private String id;
+        private double amount;
+        private String user;
+        private boolean handled;
+        private String timestamp;
+        private double payout;
+        private Currency from;
+        private Currency to;
 
         private class Currency {
             String id;
