@@ -4,18 +4,16 @@ import com.godson.discoin4j.exceptions.*;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
-import javafx.util.Pair;
 import okhttp3.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Discoin4J {
     private String token;
     private OkHttpClient client = new OkHttpClient();
-    private final String url = "https://discoin.sidetrip.xyz/";
+    private final String url = "https://discoin.zws.im/";
     private Headers headers;
     private final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private final Gson gson = new Gson();
@@ -40,47 +38,17 @@ public class Discoin4J {
      * @param to The currency code belonging to the bot the currency is being converted to.
      * @return The {@link Confirmation confirmation object} that confirms the transaction.
      * @throws IOException If for some reason OkHttp throws an error.
-     * @throws DiscoinErrorException If return code is 400.
      * @throws UnauthorizedException If return code is 401.
-     * @throws RejectedException If return code is 403.
-     * @throws UnknownErrorException If return code does not match any of the codes this wrapper handles.
+     * @throws GenericErrorException If return code does not match any of the codes this wrapper handles.
      */
-    public Confirmation makeTransaction(String userID, int amount, String to) throws IOException, DiscoinErrorException, UnauthorizedException, RejectedException, UnknownErrorException {
+    public Confirmation makeTransaction(String userID, int amount, String to) throws IOException, UnauthorizedException, GenericErrorException {
         RequestBody body = RequestBody.create(JSON, new Transaction(userID, amount, to).toString());
-        Request request = new Request.Builder().url(url + "transaction").headers(headers).post(body).build();
+        Request request = new Request.Builder().url(url + "transactions").headers(headers).post(body).build();
         Response response = client.newCall(request).execute();
         switch (response.code()) {
             case 200: return gson.fromJson(response.body().string(), Confirmation.class);
-            case 400: throw new DiscoinErrorException(gson.fromJson(response.body().string(), Status.class));
             case 401: throw new UnauthorizedException();
-            case 403: throw new RejectedException(gson.fromJson(response.body().string(), Status.class));
-            default: throw new UnknownErrorException();
-        }
-    }
-
-    /**
-     * Reverses a transaction in the Discoin API.
-     *
-     * @param receipt The receipt code given from a transaction.
-     * @return The {@link Refund confirmation of the reversal}.
-     * @throws IOException If for some reason OkHttp throws an error.
-     * @throws DiscoinErrorException If return code is 400.
-     * @throws UnauthorizedException If return code is 401.
-     * @throws RejectedException If return code is 403.
-     * @throws TransactionNotFoundException If return code is 404.
-     * @throws UnknownErrorException If return code does not match any of the codes this wrapper handles.
-     */
-    public String reverseTransaction(String receipt) throws IOException, DiscoinErrorException, UnauthorizedException, RejectedException, TransactionNotFoundException, UnknownErrorException {
-        RequestBody body = RequestBody.create(JSON, "{\"receipt\":\"" + receipt + "\"}");
-        Request request = new Request.Builder().url(url + "transaction/reverse").headers(headers).post(body).build();
-        Response response = client.newCall(request).execute();
-        switch (response.code()) {
-            case 200: return response.body().string();
-            case 400: throw new DiscoinErrorException(gson.fromJson(response.body().string(), Status.class));
-            case 401: throw new UnauthorizedException();
-            case 403: throw new RejectedException(gson.fromJson(response.body().string(), Status.class));
-            case 404: throw new TransactionNotFoundException();
-            default: throw new UnknownErrorException();
+            default: throw new GenericErrorException();
         }
     }
 
@@ -90,22 +58,18 @@ public class Discoin4J {
      * @param receipt The receipt code.
      * @return The completed {@link Receipt receipt} object.
      * @throws IOException If for some reason OkHttp throws an error.
-     * @throws DiscoinErrorException If return code is 400.
      * @throws UnauthorizedException If return code is 401.
-     * @throws RejectedException If return code is 403.
      * @throws TransactionNotFoundException If return code is 404.
-     * @throws UnknownErrorException If return code does not match any of the codes this wrapper handles.
+     * @throws GenericErrorException If return code does not match any of the codes this wrapper handles.
      */
-    public Receipt loadReceipt(String receipt) throws IOException, DiscoinErrorException, UnauthorizedException, RejectedException, TransactionNotFoundException, UnknownErrorException {
+    public Receipt loadReceipt(String receipt) throws IOException, UnauthorizedException, TransactionNotFoundException, GenericErrorException {
         Request request = new Request.Builder().url(url + "transaction/" + receipt).headers(headers).get().build();
         Response response = client.newCall(request).execute();
         switch (response.code()) {
             case 200: return gson.fromJson(response.body().string(), Receipt.class);
-            case 400: throw new DiscoinErrorException(gson.fromJson(response.body().string(), Status.class));
             case 401: throw new UnauthorizedException();
-            case 403: throw new RejectedException(gson.fromJson(response.body().string(), Status.class));
             case 404: throw new TransactionNotFoundException();
-            default: throw new UnknownErrorException();
+            default: throw new GenericErrorException();
         }
     }
 
@@ -114,20 +78,16 @@ public class Discoin4J {
      *
      * @return The {@link List list of} {@link PendingTransaction pending transactions}.
      * @throws IOException If for some reason OkHttp throws an error.
-     * @throws DiscoinErrorException If return code is 400.
      * @throws UnauthorizedException If return code is 401.
-     * @throws RejectedException If return code is 403.
-     * @throws UnknownErrorException If return code does not match any of the codes this wrapper handles.
+     * @throws GenericErrorException If return code does not match any of the codes this wrapper handles.
      */
-    public List<PendingTransaction> getPendingTransactions() throws IOException, DiscoinErrorException, UnauthorizedException, RejectedException, UnknownErrorException {
+    public List<PendingTransaction> getPendingTransactions() throws IOException, UnauthorizedException, GenericErrorException {
         Request request = new Request.Builder().url(url + "transactions").headers(headers).get().build();
         Response response = client.newCall(request).execute();
         switch (response.code()) {
             case 200: return gson.fromJson(response.body().string(), pendTransType);
-            case 400: throw new DiscoinErrorException(gson.fromJson(response.body().string(), Status.class));
             case 401: throw new UnauthorizedException();
-            case 403: throw new RejectedException(gson.fromJson(response.body().string(), Status.class));
-            default: throw new UnknownErrorException();
+            default: throw new GenericErrorException();
         }
     }
 
@@ -170,6 +130,7 @@ public class Discoin4J {
      * Cannot be created, can only be returned from the wrapper.
      * The main purpose of this is to allow the user to make use of whatever data is outputted, for whatever reason they may have.
      */
+    @Deprecated
     public class Refund {
         private String status;
         private int refundAmount;
