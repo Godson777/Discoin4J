@@ -50,7 +50,7 @@ public class Discoin4J {
         Request request = new Request.Builder().url(url + "transactions").headers(headers).post(body).build();
         Response response = client.newCall(request).execute();
         switch (response.code()) {
-            case 200: return gson.fromJson(response.body().string(), Transaction.class);
+            case 201: return gson.fromJson(response.body().string(), Transaction.class);
             case 401: throw new UnauthorizedException();
             default: throw new GenericErrorException(response.code() + ": " + response.message());
         }
@@ -70,7 +70,7 @@ public class Discoin4J {
         Request request = new Request.Builder().url(url + "transaction/" + id).headers(headers).get().build();
         Response response = client.newCall(request).execute();
         switch (response.code()) {
-            case 201: return gson.fromJson(response.body().string(), Transaction.class);
+            case 200: return gson.fromJson(response.body().string(), Transaction.class);
             case 401: throw new UnauthorizedException();
             case 404: throw new TransactionNotFoundException();
             default: throw new GenericErrorException(response.code() + ": " + response.message());
