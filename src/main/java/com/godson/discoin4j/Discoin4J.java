@@ -113,11 +113,11 @@ public class Discoin4J {
     }
 
     public void handleTransaction(Transaction transaction) throws IOException, GenericErrorException, UnauthorizedException {
-        transaction.setHandled();
-        RequestBody body = RequestBody.create(JSON, gson.toJson(transaction, Transaction.class));
+        if (transaction.handled) return;
+        RequestBody body = RequestBody.create(JSON, "{\"handled\":true}");
         Request request = new Request.Builder().url(url + "transactions/" + transaction.getId()).headers(headers).patch(body).build();
         Response response = client.newCall(request).execute();
-        switch (response.code()) {
+            switch (response.code()) {
             case 200: return; //Assume all went well. We won't need the data being given to us.
             case 401: throw new UnauthorizedException();
             default: throw new GenericErrorException();
@@ -203,12 +203,6 @@ public class Discoin4J {
 
         public Currency getTo() {
             return to;
-        }
-
-        private void setHandled() {
-            //If somehow we're trying to set an already handled transaction as handled, do nothing.
-            if (handled) return;
-            handled = true;
         }
     }
 
