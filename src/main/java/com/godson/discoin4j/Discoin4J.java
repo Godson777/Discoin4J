@@ -45,7 +45,7 @@ public class Discoin4J {
      * @throws UnauthorizedException If return code is 401.
      * @throws GenericErrorException If return code does not match any of the codes this wrapper handles.
      */
-    public Transaction makeTransaction(String userID, int amount, String to) throws IOException, UnauthorizedException, GenericErrorException {
+    public Transaction makeTransaction(String userID, double amount, String to) throws IOException, UnauthorizedException, GenericErrorException {
         RequestBody body = RequestBody.create(JSON, new TransactionRequest(userID, amount, to).toString());
         Request request = new Request.Builder().url(url + "transactions").headers(headers).post(body).build();
         Response response = client.newCall(request).execute();
@@ -130,7 +130,7 @@ public class Discoin4J {
     private class TransactionRequest {
         @SerializedName("user")
         private String id;
-        private int amount;
+        private double amount;
         @SerializedName("toId")
         private String to;
 
@@ -141,7 +141,7 @@ public class Discoin4J {
          * @param amount The amount of the "from" currency that's being converted.
          * @param to The currency code belonging to the bot the currency is being converted to.
          */
-        public TransactionRequest(String id, int amount, String to) {
+        public TransactionRequest(String id, double amount, String to) {
             this.id = id;
             this.amount = amount;
             this.to = to;
