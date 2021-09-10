@@ -1,20 +1,26 @@
-# Discoin4J (Discoin Wrapper for Java)
+# This repository has been archived due to this library having not been updated in a long, long time. And does not support the current version of Discoin's API. Nor do I plan on updating this library to support it.
 
-## What is this?
 
-This is an API wrapper developed for use with the Discoin API. You can check out Discoin [here](https://github.com/Discoin/api-v3), or you can join us over in the Discoin Discord server [here](https://discord.gg/FcPGn4z)
 
-## What the heck is a Discoin?
 
-Discoin is a currency management system designed for [Discord API Applications](https://discordapp.com/developers/intro). For more information, join the Discord server. (Link above.)
 
-## Installation
+# ~~Discoin4J (Discoin Wrapper for Java)~~
 
-[![](https://jitpack.io/v/Godson777/Discoin4J.svg)](https://jitpack.io/#Godson777/Discoin4J)
+## ~~What is this?~~
 
-Replace **VERSION** with the latest version shown above.
+~~This is an API wrapper developed for use with the Discoin API. You can check out Discoin [here](https://github.com/Discoin/api-v3), or you can join us over in the Discoin Discord server [here](https://discord.gg/FcPGn4z)~~
 
-For Maven:
+## ~~What the heck is a Discoin?~~
+
+~~Discoin is a currency management system designed for [Discord API Applications](https://discordapp.com/developers/intro). For more information, join the Discord server. (Link above.)~~
+
+## ~~Installation~~
+
+~~[![](https://jitpack.io/v/Godson777/Discoin4J.svg)](https://jitpack.io/#Godson777/Discoin4J)~~
+
+~~Replace **VERSION** with the latest version shown above.~~
+
+~~For Maven:~~
 
 ```xml
 <repository>
@@ -29,7 +35,7 @@ For Maven:
 </dependency>
 ```
 
-For Gradle:
+~~For Gradle:~~
 
 ```gradle
 allprojects {
@@ -43,6 +49,6 @@ dependencies {
 }
 ```
 
-## Links
+## ~~Links~~
 
-[Discoin](https://github.com/Discoin/api-v3)
+~~[Discoin](https://github.com/Discoin/api-v3)~~
