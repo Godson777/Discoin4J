@@ -1,4 +1,4 @@
-# This repository has been archived due to this library having not been updated in a long, long time. And does not support the current version of Discoin's API. Nor do I plan on updating this library to support it.
+# This repository has been archived due to this library having not been updated in a long, long time. And while it does support the current version of Discoin's API, if at any point it changes, I have no plan or intention to update the library to keep up with those changes.
 
 
 
