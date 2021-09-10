@@ -1,26 +1,26 @@
-# This repository has been archived due to this library having not been updated in a long, long time. And while it does support the current version of Discoin's API, if at any point it changes, I have no plan or intention to update the library to keep up with those changes.
+## This repository has been archived due to this library having not been updated in a long, long time. And while it does support the current version of Discoin's API, if at any point it changes, I have no plan or intention to update the library to keep up with those changes. Know that if you intend to use this library, you do so knowing that you may wind up having to fork it at a later date to keep up with any changes in the future.
 
 
 
 
 
-# ~~Discoin4J (Discoin Wrapper for Java)~~
+# Discoin4J (Discoin Wrapper for Java)
 
-## ~~What is this?~~
+## What is this?
 
-~~This is an API wrapper developed for use with the Discoin API. You can check out Discoin [here](https://github.com/Discoin/api-v3), or you can join us over in the Discoin Discord server [here](https://discord.gg/FcPGn4z)~~
+This is an API wrapper developed for use with the Discoin API. You can check out Discoin [here](https://github.com/Discoin/api-v3), or you can join us over in the Discoin Discord server [here](https://discord.gg/FcPGn4z)
 
-## ~~What the heck is a Discoin?~~
+## What the heck is a Discoin?
 
-~~Discoin is a currency management system designed for [Discord API Applications](https://discordapp.com/developers/intro). For more information, join the Discord server. (Link above.)~~
+Discoin is a currency management system designed for [Discord API Applications](https://discordapp.com/developers/intro). For more information, join the Discord server. (Link above.)
 
-## ~~Installation~~
+## Installation
 
-~~[![](https://jitpack.io/v/Godson777/Discoin4J.svg)](https://jitpack.io/#Godson777/Discoin4J)~~
+[![](https://jitpack.io/v/Godson777/Discoin4J.svg)](https://jitpack.io/#Godson777/Discoin4J)
 
-~~Replace **VERSION** with the latest version shown above.~~
+Replace **VERSION** with the latest version shown above.
 
-~~For Maven:~~
+For Maven:
 
 ```xml
 <repository>
@@ -35,7 +35,7 @@
 </dependency>
 ```
 
-~~For Gradle:~~
+For Gradle:
 
 ```gradle
 allprojects {
@@ -49,6 +49,6 @@ dependencies {
 }
 ```
 
-## ~~Links~~
+## Links
 
-~~[Discoin](https://github.com/Discoin/api-v3)~~
+[Discoin](https://github.com/Discoin/api-v3)
